@@ -12,6 +12,7 @@
 - clone the repo ```git clone https://github.com/MidhunManu/Timmy-Tmux-Sessionizer```
 - go to dir ```cd Timmy-Tmux-Sessionizer```
 - make the install file executeable ```chmod +x install.sh```
+- execute the installer ```./install.sh```
 
 
 ### How to use
