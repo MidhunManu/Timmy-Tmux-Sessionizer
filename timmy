@@ -1,0 +1,79 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import subprocess
+
+def add_new_path(path):
+    if os.path.isdir(path):
+        with open('/home/midhun/.local/share/timmy_dat/paths.dat', "a") as file:
+            file.write(path+"\n")
+            exit(0)
+    else:
+        print("no such path")
+        exit(1)
+
+def tmux_session_exists(session_name):
+    try:
+        # Run the tmux has-session command
+        result = subprocess.run(['tmux', 'has-session', '-t', session_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Check the return code to determine if the session exists
+        return result.returncode == 0
+    except Exception as e:
+        print(f"Error checking Tmux session: {e}")
+        return False
+
+def attach_or_create_tmux_session(path):
+    session_name = path.replace(os.path.sep, '_')
+
+    # Check if the session exists
+    if tmux_session_exists(session_name):
+        # If it exists, attach to the session
+        subprocess.run(['tmux', 'attach-session', '-t', session_name])
+    else:
+        # If it doesn't exist, create a new session at the specified path
+        try:
+            subprocess.run(['tmux', 'new-session', '-s', session_name, '-c', path])
+        except Exception as e:
+            print(f"Error creating Tmux session: {e}")
+
+def select_path_with_fzf(file_path):
+    try:
+        # Read paths from the file and use fzf for selection
+        with open(file_path, 'r') as file:
+            paths = file.read().splitlines()
+
+        if not paths:
+            return None
+
+        # Using fzf for interactive path selection
+        fzf_process = subprocess.Popen(['fzf'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+        selected_path, _ = fzf_process.communicate('\n'.join(paths))
+
+        # Check if the selected path is not empty
+        selected_path = selected_path.strip()
+        if selected_path:
+            return selected_path
+        else:
+            return None
+    except Exception as e:
+        print(f"Error selecting path with fzf: {e}")
+        return None
+
+# the path of dat file
+file_path_list = '/home/midhun/.local/share/timmy_dat/paths.dat'
+
+if len(sys.argv) == 2:
+    add_new_path(sys.argv[1])
+
+# Selecting a path using fzf
+selected_path = select_path_with_fzf(file_path_list)
+
+# Checking if a path was selected
+if selected_path:
+    # Attach or create a Tmux session for the selected path
+    attach_or_create_tmux_session(selected_path)
+else:
+    print("No path selected.")
+
