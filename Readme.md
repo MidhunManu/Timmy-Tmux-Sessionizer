@@ -6,7 +6,7 @@
 - fzf -> ```sudo package-manager install fzf```
 - python3 
 - works only on Linux and Mac 
-- not available on windows
+- not available on windows (use wsl)
 
 ### How to Install
 - clone the repo ```git clone https://github.com/MidhunManu/Timmy-Tmux-Sessionizer```
