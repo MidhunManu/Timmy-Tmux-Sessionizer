@@ -4,10 +4,13 @@ import os
 import sys
 import subprocess
 
+def absolute_path_of_dir(path):
+    return os.path.abspath(path)
+
 def add_new_path(path):
     if os.path.isdir(path):
         with open('/home/midhun/.local/share/timmy_dat/paths.dat', "a") as file:
-            file.write(path+"\n")
+            file.write(absolute_path_of_dir(path)+"\n")
             exit(0)
     else:
         print("no such path")
